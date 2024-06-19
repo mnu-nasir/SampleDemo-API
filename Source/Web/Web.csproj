@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="internal_logs\**" />
+    <Content Remove="internal_logs\**" />
+    <EmbeddedResource Remove="internal_logs\**" />
+    <None Remove="internal_logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\LoggerService\LoggerService.csproj" />
+    <ProjectReference Include="..\Core\Services\Services.csproj" />
+    <ProjectReference Include="..\Infrastructure\Persistence\Persistence.csproj" />
+    <ProjectReference Include="..\Presentation\SampleDemo.Presentation\SampleDemo.Presentation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+</Project>
