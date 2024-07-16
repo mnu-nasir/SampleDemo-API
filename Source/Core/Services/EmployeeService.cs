@@ -57,13 +57,17 @@ namespace Services
             var tenant = await _repository.Tenant.GetTenantAsync(tenantId, trackChanges)
                 ?? throw new TenantNotFoundException(tenantId);
 
+            BloodGroup bloodGrp;
+            Enum.TryParse(employee.BloodGroup, out bloodGrp);
+
             var entity = new Employee
             {
                 FirstName = employee.FirstName,
                 LastName = employee.LastName,
                 Email = employee.Email,
                 MobileNo = employee.MobileNo,
-                TenantId = tenantId
+                TenantId = tenantId,
+                BloodGroup = bloodGrp
             };
             _repository.Employee.CreateEmployee(entity);
             await _repository.SaveChangesAsync();
