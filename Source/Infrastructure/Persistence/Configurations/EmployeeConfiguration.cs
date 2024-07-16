@@ -38,7 +38,8 @@ namespace Persistence.Configurations
             // Relationships
             builder.HasOne(e => e.Tenant)
                 .WithMany(e => e.Employees)
-                .HasForeignKey(e => e.TenantId);
+                .HasForeignKey(e => e.TenantId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

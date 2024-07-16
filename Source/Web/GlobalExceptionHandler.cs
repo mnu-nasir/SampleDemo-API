@@ -28,6 +28,8 @@ namespace Web
                 httpContext.Response.StatusCode = contextFeature.Error switch
                 {
                     NotFoundException => StatusCodes.Status404NotFound,
+                    BadRequestException => StatusCodes.Status400BadRequest,
+                    InternalServerErrorException => StatusCodes.Status500InternalServerError,
                     _ => StatusCodes.Status500InternalServerError
                 };
 
@@ -37,7 +39,8 @@ namespace Web
                 {
                     StatusCode = httpContext.Response.StatusCode,
                     Message = contextFeature.Error.Message,
-                }.ToString());
+                }
+                .ToString());
             }
 
             return true;

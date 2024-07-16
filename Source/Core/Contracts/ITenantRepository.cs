@@ -1,15 +1,14 @@
 ﻿using Entities.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.RequestFeatures;
 
 namespace Contracts
 {
     public interface ITenantRepository
     {
-        Task<IEnumerable<Tenant>> GetAllTenantsAsync(bool trackChanges);
+        Task<PagedList<Tenant>> GetAllTenantsAsync(TenantParameters tenantParameters, bool trackChanges);
         Task<Tenant> GetTenantAsync(Guid tenantId, bool trackChanges);
+        void CreateTenant(Tenant tenant);
+        Task<IEnumerable<Tenant>> GetTenantsByIdAsync(IEnumerable<Guid> ids, bool trackChanges);
+        void DeleteTenant(Tenant tenant);
     }
 }

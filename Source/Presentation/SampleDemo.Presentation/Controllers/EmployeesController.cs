@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using SampleDemo.Presentation.ActionFilters;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
+using System.Text.Json;
 
 namespace SampleDemo.Presentation.Controllers
 {
@@ -16,17 +20,58 @@ namespace SampleDemo.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEmployeesForTenant([FromRoute] Guid tenantId)
+        public async Task<IActionResult> GetEmployeesForTenant([FromRoute] Guid tenantId, [FromQuery] EmployeeParameters employeeParameters)
         {
-            var employees = await _service.EmployeeService.GetEmployees(tenantId, false);
-            return Ok(employees);
+            var pagedResult = await _service.EmployeeService.GetEmployeesAsync(tenantId, employeeParameters, false);
+
+            //Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+
+            return Ok(pagedResult.employees);
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = "GetEmployeeById")]
         public async Task<IActionResult> GetEmployeeForTenant([FromRoute] Guid tenantId, [FromRoute] Guid id)
         {
-            var employee = await _service.EmployeeService.GetEmployee(tenantId, id, false);
+            var employee = await _service.EmployeeService.GetEmployeeAsync(tenantId, id, false);
             return Ok(employee);
+        }
+
+        [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> CreateEmployeeForTenant([FromRoute] Guid tenantId, [FromBody] EmployeeForCreationDto employee)
+        {
+            //if (employee is null)
+            //    return BadRequest("EmployeeForCreationDto object is null");
+
+            //if (!ModelState.IsValid)
+            //    return UnprocessableEntity(ModelState);
+
+            var employeeToReturn = await _service.EmployeeService.CreateEmployeeAsync(tenantId, employee, false);
+
+            return CreatedAtRoute("GetEmployeeById", new { tenantId, id = employeeToReturn.Id }, employeeToReturn);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteEmployeeForTenant([FromRoute] Guid tenantId, [FromRoute] Guid id)
+        {
+            await _service.EmployeeService.DeleteEmployeeAsync(tenantId, id, true);
+            return NoContent();
+        }
+
+        [HttpPut("{id:guid}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> UpdateEmployee([FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] EmployeeForUpdateDto employee)
+        {
+            //if (employee is null)
+            //    return BadRequest("EmployeeForUpdateDto object is null");
+
+            //if (!ModelState.IsValid)
+            //    return UnprocessableEntity(ModelState);
+
+            await _service.EmployeeService.UpdateEmployeeAsync(tenantId, id, employee, true);
+
+            return NoContent();
         }
     }
 }

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Shared.DataTransferObjects
+﻿namespace Shared.DataTransferObjects
 {
     public record EmployeeDto
     {
-        public Guid Id { get; set; }
-        public string? FirstName { get; init; }
-        public string? LastName { get; init; }
-        public string? Email { get; init; }
+        public required Guid Id { get; set; }
+        public required string FirstName { get; set; }
+        public required string LastName { get; set; }
+        public required string Email { get; set; }        
         public string? MobileNo { get; init; }
         public string? BloodGroup { get; init; }
     }

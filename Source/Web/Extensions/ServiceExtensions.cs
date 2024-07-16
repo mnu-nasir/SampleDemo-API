@@ -26,7 +26,8 @@ namespace Web.Extensions
                 {
                     builder.AllowAnyOrigin()
                            .AllowAnyMethod()
-                           .AllowAnyHeader();
+                           .AllowAnyHeader()
+                           .WithExposedHeaders("X-Pagination");
                 });
             });
         }

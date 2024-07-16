@@ -63,6 +63,7 @@ namespace Persistence.Configurations
             builder.HasOne(x => x.Tenant)
                 .WithMany(x => x.ApplicationUsers)
                 .HasForeignKey(x => x.TenantId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
         }
     }
