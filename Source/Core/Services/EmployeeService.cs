@@ -22,6 +22,9 @@ namespace Services
         public async Task<(IEnumerable<EmployeeDto> employees, MetaData metaData)> GetEmployeesAsync(Guid tenantId,
             EmployeeParameters employeeParameters, bool trackChanges)
         {
+            if (!employeeParameters.ValidAgeRange)
+                throw new MaxAgeRangeBadRequestException();
+
             var employeesWithMetaData = await _repository.Employee.GetEmployeesAsync(tenantId, employeeParameters, trackChanges);
             var employeeDtos = employeesWithMetaData.Select(e => new EmployeeDto
             {

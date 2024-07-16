@@ -13,10 +13,12 @@ namespace Persistence.Repositories
         {
         }
 
-        public async Task<PagedList<Employee>> GetEmployeesAsync(Guid tenantId, EmployeeParameters employeeParameters, 
+        public async Task<PagedList<Employee>> GetEmployeesAsync(Guid tenantId, EmployeeParameters employeeParameters,
             bool trackChanges)
         {
-            var employees = await FindByCondition(e => e.TenantId.Equals(tenantId), trackChanges)
+            var employees = await FindByCondition(e => e.TenantId.Equals(tenantId)
+                                    && (e.Age >= employeeParameters.MinAge
+                                    && e.Age <= employeeParameters.MaxAge), trackChanges)
                 .OrderBy(e => e.FirstName)
                 .Skip((employeeParameters.PageNumber - 1) * employeeParameters.PageSize)
                 .Take(employeeParameters.PageSize)

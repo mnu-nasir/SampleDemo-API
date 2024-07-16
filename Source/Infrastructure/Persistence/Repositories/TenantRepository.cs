@@ -21,6 +21,9 @@ namespace Persistence.Repositories
                 .Take(tenantParameters.PageSize)
                 .ToListAsync();
 
+            if (tenantParameters.IsActive.HasValue)
+                tenants = tenants.Where(t => t.IsActive == tenantParameters.IsActive).ToList();
+
             var count = await FindAll(trackChanges).CountAsync();
 
             return new PagedList<Tenant>(tenants, count, tenantParameters.PageNumber, tenantParameters.PageSize);

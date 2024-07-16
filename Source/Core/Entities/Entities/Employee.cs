@@ -9,5 +9,6 @@ namespace Entities.Entities
         public required string Email { get; set; }
         public string? MobileNo { get; set; }
         public BloodGroup? BloodGroup { get; set; }
+        public uint Age { get; set; }
     }
 }
