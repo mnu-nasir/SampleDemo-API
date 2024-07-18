@@ -2,6 +2,7 @@
 using Entities.Entities;
 using Microsoft.EntityFrameworkCore;
 using Persistence.DbContexts;
+using Persistence.Repositories.Extensions;
 using Shared.RequestFeatures;
 
 namespace Persistence.Repositories
@@ -16,9 +17,9 @@ namespace Persistence.Repositories
         public async Task<PagedList<Employee>> GetEmployeesAsync(Guid tenantId, EmployeeParameters employeeParameters,
             bool trackChanges)
         {
-            var employees = await FindByCondition(e => e.TenantId.Equals(tenantId)
-                                    && (e.Age >= employeeParameters.MinAge
-                                    && e.Age <= employeeParameters.MaxAge), trackChanges)
+            var employees = await FindByCondition(e => e.TenantId.Equals(tenantId), trackChanges)
+                .FilterEmployees(employeeParameters.MinAge, employeeParameters.MaxAge)
+                .Search(employeeParameters.SearchTerm)
                 .OrderBy(e => e.FirstName)
                 .Skip((employeeParameters.PageNumber - 1) * employeeParameters.PageSize)
                 .Take(employeeParameters.PageSize)

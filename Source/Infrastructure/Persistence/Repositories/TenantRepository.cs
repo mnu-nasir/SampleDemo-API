@@ -2,6 +2,7 @@
 using Entities.Entities;
 using Microsoft.EntityFrameworkCore;
 using Persistence.DbContexts;
+using Persistence.Repositories.Extensions;
 using Shared.RequestFeatures;
 
 namespace Persistence.Repositories
@@ -16,13 +17,12 @@ namespace Persistence.Repositories
         public async Task<PagedList<Tenant>> GetAllTenantsAsync(TenantParameters tenantParameters, bool trackChanges)
         {
             var tenants = await FindAll(trackChanges)
+                .FilterTenants(tenantParameters.IsActive)
+                .Search(tenantParameters.SearchTerm)
                 .OrderBy(t => t.Title)
                 .Skip((tenantParameters.PageNumber - 1) * tenantParameters.PageSize)
                 .Take(tenantParameters.PageSize)
                 .ToListAsync();
-
-            if (tenantParameters.IsActive.HasValue)
-                tenants = tenants.Where(t => t.IsActive == tenantParameters.IsActive).ToList();
 
             var count = await FindAll(trackChanges).CountAsync();
 
