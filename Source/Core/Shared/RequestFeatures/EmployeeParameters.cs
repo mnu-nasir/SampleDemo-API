@@ -2,6 +2,11 @@
 {
     public sealed class EmployeeParameters : RequestParameters
     {
+        public EmployeeParameters()
+        {
+            OrderBy = "FirstName";
+        }
+
         public uint MinAge { get; set; }
         public uint MaxAge { get; set; } = int.MaxValue;
 

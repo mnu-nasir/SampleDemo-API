@@ -19,6 +19,7 @@ namespace Persistence.Repositories
             var tenants = await FindAll(trackChanges)
                 .FilterTenants(tenantParameters.IsActive)
                 .Search(tenantParameters.SearchTerm)
+                .Sort(tenantParameters.OrderBy)
                 .OrderBy(t => t.Title)
                 .Skip((tenantParameters.PageNumber - 1) * tenantParameters.PageSize)
                 .Take(tenantParameters.PageSize)

@@ -1,4 +1,6 @@
 ﻿using Entities.Entities;
+using Persistence.Repositories.Extensions.Utility;
+using System.Linq.Dynamic.Core;
 
 namespace Persistence.Repositories.Extensions
 {
@@ -15,9 +17,21 @@ namespace Persistence.Repositories.Extensions
             if (string.IsNullOrWhiteSpace(searchTerm))
                 return employees;
 
-            return employees.Where(e =>
-                                e.FirstName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
-                                        || e.LastName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+            return employees.Where(e => e.FirstName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                                                 || e.LastName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static IQueryable<Employee> Sort(this IQueryable<Employee> employees, string? orderByQueryString)
+        {
+            if (string.IsNullOrWhiteSpace(orderByQueryString))
+                return employees.OrderBy(e => e.FirstName);
+
+            var orderQuery = OrderQueryBuilder.CreateOrderQuery<Tenant>(orderByQueryString);
+
+            if (string.IsNullOrWhiteSpace(orderQuery))
+                return employees.OrderBy(e => e.FirstName);
+
+            return employees.OrderBy(orderQuery);
         }
     }
 }

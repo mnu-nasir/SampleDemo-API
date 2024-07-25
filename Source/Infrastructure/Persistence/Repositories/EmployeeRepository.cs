@@ -20,6 +20,7 @@ namespace Persistence.Repositories
             var employees = await FindByCondition(e => e.TenantId.Equals(tenantId), trackChanges)
                 .FilterEmployees(employeeParameters.MinAge, employeeParameters.MaxAge)
                 .Search(employeeParameters.SearchTerm)
+                .Sort(employeeParameters.OrderBy)
                 .OrderBy(e => e.FirstName)
                 .Skip((employeeParameters.PageNumber - 1) * employeeParameters.PageSize)
                 .Take(employeeParameters.PageSize)

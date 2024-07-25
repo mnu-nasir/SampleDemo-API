@@ -1,4 +1,6 @@
 ﻿using Entities.Entities;
+using System.Linq.Dynamic.Core;
+using Persistence.Repositories.Extensions.Utility;
 
 namespace Persistence.Repositories.Extensions
 {
@@ -18,6 +20,19 @@ namespace Persistence.Repositories.Extensions
                 return tenants;
 
             return tenants.Where(t => t.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static IQueryable<Tenant> Sort(this IQueryable<Tenant> tenants, string? orderByQueryString)
+        {
+            if (string.IsNullOrWhiteSpace(orderByQueryString))
+                return tenants.OrderBy(e => e.Title);
+
+            var orderQuery = OrderQueryBuilder.CreateOrderQuery<Tenant>(orderByQueryString);
+
+            if (string.IsNullOrWhiteSpace(orderQuery))
+                return tenants.OrderBy(e => e.Title);
+
+            return tenants.OrderBy(orderQuery);
         }
     }
 }
