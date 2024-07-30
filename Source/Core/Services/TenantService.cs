@@ -11,11 +11,16 @@ namespace Services
     {
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
+        private readonly IDataShaper<TenantDto> _dataShaper;
 
-        public TenantService(IRepositoryManager repository, ILoggerManager logger)
+        public TenantService(
+            IRepositoryManager repository,
+            ILoggerManager logger,
+            IDataShaper<TenantDto> dataShaper)
         {
             _repository = repository;
             _logger = logger;
+            _dataShaper = dataShaper;
         }
 
         public async Task<(IEnumerable<TenantDto> tenants, MetaData metaData)> GetAllTenantsAsync(TenantParameters tenantParameters,
@@ -133,6 +138,22 @@ namespace Services
             tenantEntity.Title = tenantForUpdate.Title;
             tenantEntity.Address = tenantForUpdate.Address;
             await _repository.SaveChangesAsync();
+        }
+
+        public async Task<(IEnumerable<Entity> tenants, MetaData metaData)> GetAllDataShapedTenantsAsync(
+            TenantParameters tenantParameters, bool trackChanges)
+        {
+            var tenantsWithMetaData = await _repository.Tenant.GetAllTenantsAsync(tenantParameters, trackChanges);
+            var tenantsDto = tenantsWithMetaData.Select(t => new TenantDto
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Address = t.Address
+            }).ToList();
+
+            var shapedData = _dataShaper.ShapeData(tenantsDto, tenantParameters.Fields);
+
+            return (tenants: shapedData, metaData: tenantsWithMetaData.MetaData);
         }
     }
 }

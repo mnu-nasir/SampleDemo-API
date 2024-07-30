@@ -103,5 +103,22 @@ namespace SampleDemo.Presentation.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("shappedAll")]
+        public async Task<IActionResult> GetDataShapedTenants(TenantParameters tenantParameters)
+        {
+            try
+            {
+                var pagedResult = await _serviceManager.TenantService.GetAllDataShapedTenantsAsync(tenantParameters, false);
+
+                Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+
+                return Ok(pagedResult.tenants);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

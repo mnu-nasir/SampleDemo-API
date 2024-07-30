@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Service.Contracts;
+using Shared.DataTransferObjects;
 
 namespace Services
 {
@@ -8,10 +9,13 @@ namespace Services
         private readonly Lazy<ITenantService> _tenantService;
         private readonly Lazy<IEmployeeService> _employeeService;
 
-        public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager looger)
+        public ServiceManager(
+            IRepositoryManager repositoryManager, 
+            ILoggerManager looger, 
+            IDataShaper<EmployeeDto> dataShaper)
         {
             _tenantService = new Lazy<ITenantService>(() => new TenantService(repositoryManager, looger));
-            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, looger));
+            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, looger, dataShaper));
         }
 
         public ITenantService TenantService => _tenantService.Value;

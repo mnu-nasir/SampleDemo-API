@@ -12,11 +12,16 @@ namespace Services
     {
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
+        private readonly IDataShaper<EmployeeDto> _dataShaper;
 
-        public EmployeeService(IRepositoryManager repository, ILoggerManager logger)
+        public EmployeeService(
+            IRepositoryManager repository,
+            ILoggerManager logger,
+            IDataShaper<EmployeeDto> dataShaper)
         {
             _repository = repository;
             _logger = logger;
+            _dataShaper = dataShaper;
         }
 
         public async Task<(IEnumerable<EmployeeDto> employees, MetaData metaData)> GetEmployeesAsync(Guid tenantId,
@@ -109,6 +114,28 @@ namespace Services
             employeeEntity.BloodGroup = bloodGrp;
 
             await _repository.SaveChangesAsync();
+        }
+
+        public async Task<(IEnumerable<Entity> employees, MetaData metaData)> GetEmployeesDataShaperAsync(Guid tenantId,
+            EmployeeParameters employeeParameters, bool trackChanges)
+        {
+            if (!employeeParameters.ValidAgeRange)
+                throw new MaxAgeRangeBadRequestException();
+
+            var employeesWithMetaData = await _repository.Employee.GetEmployeesAsync(tenantId, employeeParameters, trackChanges);
+            var employeeDtos = employeesWithMetaData.Select(e => new EmployeeDto
+            {
+                Id = e.Id,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                Email = e.Email,
+                MobileNo = e.MobileNo,
+                BloodGroup = e.BloodGroup.ToString()
+            }).ToList();
+
+            var shapedData = _dataShaper.ShapeData(employeeDtos, employeeParameters.Fields);
+
+            return (employees: shapedData, metaData: employeesWithMetaData.MetaData);
         }
     }
 }

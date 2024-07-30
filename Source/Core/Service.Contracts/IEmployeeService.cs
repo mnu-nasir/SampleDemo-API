@@ -1,5 +1,7 @@
-﻿using Shared.DataTransferObjects;
+﻿using Entities.Entities;
+using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
+using System.Dynamic;
 
 namespace Service.Contracts
 {
@@ -11,5 +13,8 @@ namespace Service.Contracts
         Task<EmployeeDto> CreateEmployeeAsync(Guid tenantId, EmployeeForCreationDto employee, bool trackChanges);
         Task DeleteEmployeeAsync(Guid tenantId, Guid employeeId, bool trackChanges);
         Task UpdateEmployeeAsync(Guid tenantId, Guid employeeId, EmployeeForUpdateDto employeeForUpdate, bool trackChanges);
+
+        Task<(IEnumerable<Entity> employees, MetaData metaData)> GetEmployeesDataShaperAsync(Guid tenantId,
+            EmployeeParameters employeeParameters, bool trackChanges);
     }
 }

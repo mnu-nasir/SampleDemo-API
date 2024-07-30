@@ -73,5 +73,15 @@ namespace SampleDemo.Presentation.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("shapedAll")]
+        public async Task<IActionResult> GetShapedEmployeesForTenant([FromRoute] Guid tenantId, [FromQuery] EmployeeParameters employeeParameters)
+        {
+            var pagedResult = await _service.EmployeeService.GetEmployeesDataShaperAsync(tenantId, employeeParameters, false);
+
+            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+
+            return Ok(pagedResult.employees);
+        }
     }
 }

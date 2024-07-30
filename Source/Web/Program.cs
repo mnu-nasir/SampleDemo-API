@@ -1,7 +1,10 @@
+using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 using SampleDemo.Presentation.ActionFilters;
+using Services.DataShaping;
+using Shared.DataTransferObjects;
 using Web;
 using Web.Extensions;
 
@@ -29,6 +32,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 
 builder.Services.AddScoped<ValidationFilterAttribute>();
+builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
 
 builder.Services.AddControllers(config =>
 {
