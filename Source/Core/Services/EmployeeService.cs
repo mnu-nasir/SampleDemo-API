@@ -2,9 +2,11 @@
 using Entities.Entities;
 using Entities.Enums;
 using Entities.Exceptions;
+using Entities.LinkModels;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
+using System.ComponentModel.Design;
 
 namespace Services
 {
@@ -13,15 +15,18 @@ namespace Services
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IDataShaper<EmployeeDto> _dataShaper;
+        private readonly IEmployeeLinks _employeeLinks;
 
         public EmployeeService(
             IRepositoryManager repository,
             ILoggerManager logger,
-            IDataShaper<EmployeeDto> dataShaper)
+            IDataShaper<EmployeeDto> dataShaper,
+            IEmployeeLinks employeeLinks)
         {
             _repository = repository;
             _logger = logger;
             _dataShaper = dataShaper;
+            _employeeLinks = employeeLinks;
         }
 
         public async Task<(IEnumerable<EmployeeDto> employees, MetaData metaData)> GetEmployeesAsync(Guid tenantId,
@@ -116,7 +121,7 @@ namespace Services
             await _repository.SaveChangesAsync();
         }
 
-        public async Task<(IEnumerable<Entity> employees, MetaData metaData)> GetEmployeesDataShaperAsync(Guid tenantId,
+        public async Task<(IEnumerable<ShapedEntity> employees, MetaData metaData)> GetEmployeesDataShaperAsync(Guid tenantId,
             EmployeeParameters employeeParameters, bool trackChanges)
         {
             if (!employeeParameters.ValidAgeRange)
@@ -136,6 +141,31 @@ namespace Services
             var shapedData = _dataShaper.ShapeData(employeeDtos, employeeParameters.Fields);
 
             return (employees: shapedData, metaData: employeesWithMetaData.MetaData);
+        }
+
+        public async Task<(LinkResponse linkResponse, MetaData metaData)> GetHATEOASEmployeesAsync(Guid tenantId,
+            EmployeeLinkParameters linkParameters, bool trackChanges)
+        {
+            if (!linkParameters.EmployeeParameters.ValidAgeRange)
+                throw new MaxAgeRangeBadRequestException();
+
+            var employeesWithMetaData = await _repository.Employee.GetEmployeesAsync(tenantId,
+                linkParameters.EmployeeParameters, trackChanges);
+
+            var employeeDtos = employeesWithMetaData.Select(e => new EmployeeDto
+            {
+                Id = e.Id,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                Email = e.Email,
+                MobileNo = e.MobileNo,
+                BloodGroup = e.BloodGroup.ToString()
+            }).ToList();
+
+            var links = _employeeLinks.TryGenerateLinks(employeeDtos,
+                linkParameters.EmployeeParameters.Fields, tenantId, linkParameters.Context);
+
+            return (linkResponse: links, metaData: employeesWithMetaData.MetaData);
         }
     }
 }

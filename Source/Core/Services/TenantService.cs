@@ -1,9 +1,12 @@
 ﻿using Contracts;
 using Entities.Entities;
+using Entities.Enums;
 using Entities.Exceptions;
+using Entities.LinkModels;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
+using System.ComponentModel.Design;
 
 namespace Services
 {
@@ -12,15 +15,18 @@ namespace Services
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IDataShaper<TenantDto> _dataShaper;
+        private readonly ITenantLinks _tenantLinks;
 
         public TenantService(
             IRepositoryManager repository,
             ILoggerManager logger,
-            IDataShaper<TenantDto> dataShaper)
+            IDataShaper<TenantDto> dataShaper,
+            ITenantLinks tenantLinks)
         {
             _repository = repository;
             _logger = logger;
             _dataShaper = dataShaper;
+            _tenantLinks = tenantLinks;
         }
 
         public async Task<(IEnumerable<TenantDto> tenants, MetaData metaData)> GetAllTenantsAsync(TenantParameters tenantParameters,
@@ -140,7 +146,7 @@ namespace Services
             await _repository.SaveChangesAsync();
         }
 
-        public async Task<(IEnumerable<Entity> tenants, MetaData metaData)> GetAllDataShapedTenantsAsync(
+        public async Task<(IEnumerable<ShapedEntity> tenants, MetaData metaData)> GetAllDataShapedTenantsAsync(
             TenantParameters tenantParameters, bool trackChanges)
         {
             var tenantsWithMetaData = await _repository.Tenant.GetAllTenantsAsync(tenantParameters, trackChanges);
@@ -154,6 +160,21 @@ namespace Services
             var shapedData = _dataShaper.ShapeData(tenantsDto, tenantParameters.Fields);
 
             return (tenants: shapedData, metaData: tenantsWithMetaData.MetaData);
+        }
+
+        public async Task<(LinkResponse linkResponse, MetaData metaData)> GetHATEOASAllTenantsAsync(TenantLinkParameters linkParameters, bool trackChanges)
+        {
+            var tenantsWithMetaData = await _repository.Tenant.GetAllTenantsAsync(linkParameters.TenantParameters, trackChanges);
+            var tenantsDto = tenantsWithMetaData.Select(t => new TenantDto
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Address = t.Address
+            }).ToList();
+
+            var links = _tenantLinks.TryGenerateLinks(tenantsDto, linkParameters.TenantParameters.Fields, linkParameters.Context);
+
+            return (linkResponse: links, metaData: tenantsWithMetaData.MetaData);
         }
     }
 }

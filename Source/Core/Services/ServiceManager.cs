@@ -10,12 +10,15 @@ namespace Services
         private readonly Lazy<IEmployeeService> _employeeService;
 
         public ServiceManager(
-            IRepositoryManager repositoryManager, 
-            ILoggerManager looger, 
-            IDataShaper<EmployeeDto> dataShaper)
+            IRepositoryManager repositoryManager,
+            ILoggerManager looger,
+            IDataShaper<TenantDto> tenantDataShaper,
+            IDataShaper<EmployeeDto> employeeDataShaper,
+            ITenantLinks tenantLinks,
+            IEmployeeLinks employeeLinks)
         {
-            _tenantService = new Lazy<ITenantService>(() => new TenantService(repositoryManager, looger));
-            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, looger, dataShaper));
+            _tenantService = new Lazy<ITenantService>(() => new TenantService(repositoryManager, looger, tenantDataShaper, tenantLinks));
+            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, looger, employeeDataShaper, employeeLinks));
         }
 
         public ITenantService TenantService => _tenantService.Value;

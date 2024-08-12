@@ -7,6 +7,7 @@ using Services.DataShaping;
 using Shared.DataTransferObjects;
 using Web;
 using Web.Extensions;
+using Web.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +33,10 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 
 builder.Services.AddScoped<ValidationFilterAttribute>();
+builder.Services.AddScoped<ValidateMediaTypeAttribute>();
 builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
+builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
+builder.Services.AddScoped<ITenantLinks, TenantLinks>();
 
 builder.Services.AddControllers(config =>
 {
@@ -46,6 +50,8 @@ builder.Services.AddControllers(config =>
 {
     options.JsonSerializerOptions.PropertyNamingPolicy = null;
 });
+
+builder.Services.AddCustomMediaTypes();
 
 var app = builder.Build();
 

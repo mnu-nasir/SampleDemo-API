@@ -1,4 +1,5 @@
 ﻿using Entities.Entities;
+using Entities.LinkModels;
 using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
 
@@ -15,7 +16,10 @@ namespace Service.Contracts
         Task DeleteTenantAsync(Guid tenantId, bool trackChanges);
         Task UpdateTenantAsync(Guid tenantId, TenantForUpdateDto tenantForUpdate, bool trackChanges);
 
-        Task<(IEnumerable<Entity> tenants, MetaData metaData)> GetAllDataShapedTenantsAsync(
+        Task<(IEnumerable<ShapedEntity> tenants, MetaData metaData)> GetAllDataShapedTenantsAsync(
             TenantParameters tenantParameters, bool trackChanges);
+
+        Task<(LinkResponse linkResponse, MetaData metaData)> GetHATEOASAllTenantsAsync(
+            TenantLinkParameters linkParameters, bool trackChanges);
     }
 }

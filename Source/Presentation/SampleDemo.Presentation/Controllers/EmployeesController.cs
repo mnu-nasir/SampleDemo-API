@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Entities.LinkModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SampleDemo.Presentation.ActionFilters;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
+using System.ComponentModel.Design;
 using System.Text.Json;
 
 namespace SampleDemo.Presentation.Controllers
@@ -82,6 +84,21 @@ namespace SampleDemo.Presentation.Controllers
             Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
 
             return Ok(pagedResult.employees);
+        }
+
+        [HttpGet("hateoasAll")]
+        [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
+        public async Task<IActionResult> GetHATEOASEmployeesForTenant([FromRoute] Guid tenantId, [FromQuery] EmployeeParameters employeeParameters)
+        {
+            var linkParams = new EmployeeLinkParameters(employeeParameters, HttpContext);
+
+            var result = await _service.EmployeeService.GetHATEOASEmployeesAsync(tenantId, linkParams, trackChanges: false);
+
+            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(result.metaData));
+
+            return result.linkResponse.HasLinks 
+                        ? Ok(result.linkResponse.LinkedEntities) 
+                        : Ok(result.linkResponse.ShapedEntities);
         }
     }
 }

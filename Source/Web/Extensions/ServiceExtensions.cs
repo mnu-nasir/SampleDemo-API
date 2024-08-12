@@ -2,6 +2,8 @@
 using Entities.Entities;
 using LoggerService;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence.DbContexts;
 using Persistence.Repositories;
@@ -112,9 +114,40 @@ namespace Web.Extensions
             services.AddTransient<IUserAccountResolver, UserAccountResolver>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
         public static IMvcBuilder AddCustomCSVFormatter(this IMvcBuilder builder)
         {
             return builder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutputFormatter()));
+        }
+
+        public static void AddCustomMediaTypes(this IServiceCollection services)
+        {
+            services.Configure<MvcOptions>(config =>
+            {
+                var systemTextJsonOutputFormatter = config.OutputFormatters
+                        .OfType<SystemTextJsonOutputFormatter>()?
+                        .FirstOrDefault();
+
+                if (systemTextJsonOutputFormatter != null)
+                {
+                    systemTextJsonOutputFormatter.SupportedMediaTypes
+                            .Add("application/vnd.sampledemo.hateoas+json");
+                }
+
+                var xmlOutputFormatter = config.OutputFormatters
+                        .OfType<XmlDataContractSerializerOutputFormatter>()?
+                        .FirstOrDefault();
+
+                if (xmlOutputFormatter != null)
+                {
+                    xmlOutputFormatter.SupportedMediaTypes
+                            .Add("application/vnd.sampledemo.hateoas+xml");
+                }
+            });
         }
     }
 }

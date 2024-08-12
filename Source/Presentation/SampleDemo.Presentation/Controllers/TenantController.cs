@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Entities.LinkModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using SampleDemo.Presentation.ActionFilters;
 using SampleDemo.Presentation.ModelBinders;
@@ -105,7 +107,7 @@ namespace SampleDemo.Presentation.Controllers
         }
 
         [HttpGet("shappedAll")]
-        public async Task<IActionResult> GetDataShapedTenants(TenantParameters tenantParameters)
+        public async Task<IActionResult> GetDataShapedTenants([FromQuery] TenantParameters tenantParameters)
         {
             try
             {
@@ -119,6 +121,21 @@ namespace SampleDemo.Presentation.Controllers
             {
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        [HttpGet("hateoasAll")]
+        [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
+        public async Task<IActionResult> GetHATEOASTenants([FromQuery] TenantParameters tenantParameters)
+        {
+            var linkParams = new TenantLinkParameters(tenantParameters, HttpContext);
+            
+            var result = await _serviceManager.TenantService.GetHATEOASAllTenantsAsync(linkParams, false);
+
+            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(result.metaData));
+
+            return result.linkResponse.HasLinks
+                            ? Ok(result.linkResponse.LinkedEntities)
+                            : Ok(result.linkResponse.ShapedEntities);
         }
     }
 }

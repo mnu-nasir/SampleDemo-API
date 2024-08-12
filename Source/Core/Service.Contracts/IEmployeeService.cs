@@ -1,7 +1,7 @@
 ﻿using Entities.Entities;
+using Entities.LinkModels;
 using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
-using System.Dynamic;
 
 namespace Service.Contracts
 {
@@ -14,7 +14,17 @@ namespace Service.Contracts
         Task DeleteEmployeeAsync(Guid tenantId, Guid employeeId, bool trackChanges);
         Task UpdateEmployeeAsync(Guid tenantId, Guid employeeId, EmployeeForUpdateDto employeeForUpdate, bool trackChanges);
 
-        Task<(IEnumerable<Entity> employees, MetaData metaData)> GetEmployeesDataShaperAsync(Guid tenantId,
+        Task<(IEnumerable<ShapedEntity> employees, MetaData metaData)> GetEmployeesDataShaperAsync(Guid tenantId,
             EmployeeParameters employeeParameters, bool trackChanges);
+        
+        /// <summary>
+        /// For HATEOAS Implementation
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <param name="linkParameters"></param>
+        /// <param name="trackChanges"></param>
+        /// <returns></returns>
+        Task<(LinkResponse linkResponse, MetaData metaData)> GetHATEOASEmployeesAsync(Guid tenantId, 
+            EmployeeLinkParameters linkParameters, bool trackChanges);
     }
 }
