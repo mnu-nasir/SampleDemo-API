@@ -11,6 +11,7 @@ using Persistence.Resolvers;
 using Service.Contracts;
 using Services;
 using Web.CustomFormatters;
+using System.Threading.RateLimiting;
 
 namespace Web.Extensions
 {
@@ -147,6 +148,41 @@ namespace Web.Extensions
                     xmlOutputFormatter.SupportedMediaTypes
                             .Add("application/vnd.sampledemo.hateoas+xml");
                 }
+            });
+        }
+
+        public static void ConfigureRateLimitingOptions(this IServiceCollection services)
+        {
+            services.AddRateLimiter(opt =>
+            {
+                opt.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                    RateLimitPartition.GetFixedWindowLimiter("GlobalLimiter",
+                    partition => new FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true,
+                        PermitLimit = 5,
+                        QueueLimit = 2,
+                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                        Window = TimeSpan.FromMinutes(1),
+                    }));
+
+                //opt.RejectionStatusCode = 429;
+
+                opt.OnRejected = async (context, token) =>
+                {
+                    context.HttpContext.Response.StatusCode = 429;
+
+                    if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                    {
+                        await context.HttpContext.Response.WriteAsync(
+                            $"Too many request. Please try after {retryAfter.TotalSeconds} seconds.", token);
+                    }
+                    else
+                    {
+                        await context.HttpContext.Response.WriteAsync(
+                            $"Too many request. Please try again later.", token);
+                    }
+                };
             });
         }
     }

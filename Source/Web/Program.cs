@@ -22,6 +22,7 @@ builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureTenantResolver();
 builder.Services.ConfigureSqlContext(builder.Configuration);
+builder.Services.ConfigureRateLimitingOptions();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddAuthentication();
@@ -69,6 +70,8 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
+
+app.UseRateLimiter();
 app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
