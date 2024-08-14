@@ -23,6 +23,7 @@ builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureTenantResolver();
 builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.ConfigureRateLimitingOptions();
+builder.Services.ConfigureVersioning();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddAuthentication();

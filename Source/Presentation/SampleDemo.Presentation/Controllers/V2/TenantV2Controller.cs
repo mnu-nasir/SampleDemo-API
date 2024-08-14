@@ -1,6 +1,6 @@
-﻿using Entities.LinkModels;
+﻿using Asp.Versioning;
+using Entities.LinkModels;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using SampleDemo.Presentation.ActionFilters;
 using SampleDemo.Presentation.ModelBinders;
@@ -9,15 +9,16 @@ using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
 using System.Text.Json;
 
-namespace SampleDemo.Presentation.Controllers
+namespace SampleDemo.Presentation.Controllers.V2
 {
-    [Route("api/tenants")]
+    [ApiVersion("2.0")]
+    [Route("api/{v:apiversion}/tenants")]
     [ApiController]
-    public class TenantController : ControllerBase
+    public class TenantV2Controller : ControllerBase
     {
         private readonly IServiceManager _serviceManager;
 
-        public TenantController(IServiceManager serviceManager)
+        public TenantV2Controller(IServiceManager serviceManager)
         {
             _serviceManager = serviceManager;
         }
@@ -81,7 +82,7 @@ namespace SampleDemo.Presentation.Controllers
             //    return UnprocessableEntity(ModelState);
 
             var result = await _serviceManager.TenantService.CreateTenantCollection(tenantCollection);
-            return CreatedAtRoute("GetTenantCollection", new { ids = result.ids }, result.tenants);
+            return CreatedAtRoute("GetTenantCollection", new { result.ids }, result.tenants);
         }
 
         [HttpDelete("{id:guid}")]
@@ -128,7 +129,7 @@ namespace SampleDemo.Presentation.Controllers
         public async Task<IActionResult> GetHATEOASTenants([FromQuery] TenantParameters tenantParameters)
         {
             var linkParams = new TenantLinkParameters(tenantParameters, HttpContext);
-            
+
             var result = await _serviceManager.TenantService.GetHATEOASAllTenantsAsync(linkParams, false);
 
             Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(result.metaData));

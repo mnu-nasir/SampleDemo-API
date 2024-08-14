@@ -12,6 +12,7 @@ using Service.Contracts;
 using Services;
 using Web.CustomFormatters;
 using System.Threading.RateLimiting;
+using Asp.Versioning;
 
 namespace Web.Extensions
 {
@@ -168,22 +169,32 @@ namespace Web.Extensions
 
                 //opt.RejectionStatusCode = 429;
 
-                opt.OnRejected = async (context, token) =>
+                opt.OnRejected = async (rejectContext, cancellationToken) =>
                 {
-                    context.HttpContext.Response.StatusCode = 429;
+                    rejectContext.HttpContext.Response.StatusCode = 429;
 
-                    if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                    if (rejectContext.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
                     {
-                        await context.HttpContext.Response.WriteAsync(
-                            $"Too many request. Please try after {retryAfter.TotalSeconds} seconds.", token);
+                        await rejectContext.HttpContext.Response.WriteAsync(
+                            $"Too many request. Please try after {retryAfter.TotalSeconds} seconds.", cancellationToken);
                     }
                     else
                     {
-                        await context.HttpContext.Response.WriteAsync(
-                            $"Too many request. Please try again later.", token);
+                        await rejectContext.HttpContext.Response.WriteAsync(
+                            $"Too many request. Please try again later.", cancellationToken);
                     }
                 };
             });
+        }
+
+        public static void ConfigureVersioning(this IServiceCollection services)
+        {
+            services.AddApiVersioning(opt =>
+            {
+                opt.ReportApiVersions = true;
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.DefaultApiVersion = new ApiVersion(1, 0);
+            }).AddMvc();
         }
     }
 }

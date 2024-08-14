@@ -1,22 +1,23 @@
-﻿using Entities.LinkModels;
+﻿using Asp.Versioning;
+using Entities.LinkModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SampleDemo.Presentation.ActionFilters;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
-using System.ComponentModel.Design;
 using System.Text.Json;
 
-namespace SampleDemo.Presentation.Controllers
+namespace SampleDemo.Presentation.Controllers.V1
 {
+    [ApiVersion("1.0")]
     [Route("api/tenants/{tenantId}/employees")]
     [ApiController]
-    public class EmployeesController : ControllerBase
+    public class EmployeesV2Controller : ControllerBase
     {
         private readonly IServiceManager _service;
 
-        public EmployeesController(IServiceManager service)
+        public EmployeesV2Controller(IServiceManager service)
         {
             _service = service;
         }
@@ -96,8 +97,8 @@ namespace SampleDemo.Presentation.Controllers
 
             Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(result.metaData));
 
-            return result.linkResponse.HasLinks 
-                        ? Ok(result.linkResponse.LinkedEntities) 
+            return result.linkResponse.HasLinks
+                        ? Ok(result.linkResponse.LinkedEntities)
                         : Ok(result.linkResponse.ShapedEntities);
         }
     }
