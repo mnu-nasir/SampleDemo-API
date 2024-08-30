@@ -19,8 +19,8 @@ namespace Persistence.DbContexts
             _userAccount = accountResolver.GetCurrentUserAccount();
         }
 
-        public DbSet<Employee>? Employees { get; set; }
-        public DbSet<ApplicationUser>? ApplicationUsers { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

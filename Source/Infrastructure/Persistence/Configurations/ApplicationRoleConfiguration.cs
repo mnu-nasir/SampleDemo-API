@@ -33,6 +33,22 @@ namespace Persistence.Configurations
 
             // Query Filter
             builder.HasQueryFilter(t => t.IsDeleted == false);
+
+            builder.HasData
+            (
+                new ApplicationRole
+                {
+                    Name = "Manager",
+                    NormalizedName = "MANAGER",
+                    CreatedAt = DateTime.UtcNow
+                },
+                new ApplicationRole
+                {
+                    Name = "Administrator",
+                    NormalizedName = "ADMINISTRATOR",
+                    CreatedAt = DateTime.UtcNow
+                }
+            );
         }
     }
 }

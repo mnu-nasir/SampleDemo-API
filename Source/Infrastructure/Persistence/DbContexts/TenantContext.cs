@@ -5,7 +5,7 @@ namespace Persistence.DbContexts
 {
     public sealed class TenantContext : DbContext, IDisposable
     {
-        public DbSet<Tenant>? Tenants { get; set; }
+        public DbSet<Tenant> Tenants { get; set; }
 
         public TenantContext(DbContextOptions<TenantContext> options) 
             : base(options)

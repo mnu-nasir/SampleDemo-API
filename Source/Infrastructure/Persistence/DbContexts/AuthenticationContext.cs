@@ -6,8 +6,8 @@ namespace Persistence.DbContexts
 {
     public sealed class AuthenticationContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, IDisposable
     {
-        public DbSet<ApplicationUser>? ApplicationUsers { get; set; }
-        public DbSet<ApplicationRole>? ApplicationRoles { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<ApplicationRole> ApplicationRoles { get; set; }
 
         public AuthenticationContext(DbContextOptions<AuthenticationContext> options)
             : base(options)

@@ -6,10 +6,10 @@ namespace Persistence.DbContexts
 {
     public sealed class DatabaseContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
-        public DbSet<Tenant>? Tenants { get; set; }
-        public DbSet<Employee>? Employees { get; set; }
-        public DbSet<ApplicationUser>? ApplicationUsers { get; set; }
-        public DbSet<ApplicationRole>? ApplicationRoles { get; set; }
+        public DbSet<Tenant> Tenants { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<ApplicationRole> ApplicationRoles { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options)
             : base(options)

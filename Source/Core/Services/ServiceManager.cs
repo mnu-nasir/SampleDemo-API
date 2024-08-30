@@ -1,4 +1,7 @@
 ﻿using Contracts;
+using Entities.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 
@@ -8,20 +11,25 @@ namespace Services
     {
         private readonly Lazy<ITenantService> _tenantService;
         private readonly Lazy<IEmployeeService> _employeeService;
+        private readonly Lazy<IAuthenticationService> _authenticationService;
 
         public ServiceManager(
             IRepositoryManager repositoryManager,
-            ILoggerManager looger,
+            ILoggerManager logger,
             IDataShaper<TenantDto> tenantDataShaper,
             IDataShaper<EmployeeDto> employeeDataShaper,
             ITenantLinks tenantLinks,
-            IEmployeeLinks employeeLinks)
+            IEmployeeLinks employeeLinks,
+            UserManager<ApplicationUser> userManager,
+            IConfiguration configuration)
         {
-            _tenantService = new Lazy<ITenantService>(() => new TenantService(repositoryManager, looger, tenantDataShaper, tenantLinks));
-            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, looger, employeeDataShaper, employeeLinks));
+            _tenantService = new Lazy<ITenantService>(() => new TenantService(repositoryManager, logger, tenantDataShaper, tenantLinks));
+            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, logger, employeeDataShaper, employeeLinks));
+            _authenticationService = new Lazy<IAuthenticationService>(() => new AuthenticationService(logger, userManager, configuration));
         }
 
         public ITenantService TenantService => _tenantService.Value;
         public IEmployeeService EmployeeService => _employeeService.Value;
+        public IAuthenticationService AuthenticationService => _authenticationService.Value;
     }
 }
