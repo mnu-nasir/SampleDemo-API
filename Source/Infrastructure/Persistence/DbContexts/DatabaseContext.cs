@@ -26,6 +26,7 @@ namespace Persistence.DbContexts
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
+            modelBuilder.SeedData();
         }
 
         public override int SaveChanges()
@@ -39,7 +40,7 @@ namespace Persistence.DbContexts
         }
 
         public override Task<int> SaveChangesAsync(
-            bool acceptAllChangesOnSuccess, 
+            bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default)
         {
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);

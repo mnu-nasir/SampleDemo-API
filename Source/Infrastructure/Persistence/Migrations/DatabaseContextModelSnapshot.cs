@@ -26,39 +26,32 @@ namespace Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnOrder(1);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("CreatedAt")
                         .IsRequired()
-                        .HasColumnType("datetime2")
-                        .HasColumnOrder(5);
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnOrder(4);
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnOrder(7);
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
-                        .HasColumnOrder(6);
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnOrder(2);
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnOrder(3);
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -68,144 +61,136 @@ namespace Persistence.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("ApplicationRole", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("e3cc0c53-8409-4a08-928a-e0996bc14e23"),
+                            CreatedAt = new DateTime(2024, 9, 4, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "",
+                            IsDeleted = false,
+                            Name = "Super Admin",
+                            NormalizedName = "SUPER ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("6c894122-fbe3-41b4-9b19-4e3ac41a84b2"),
+                            CreatedAt = new DateTime(2024, 9, 4, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "",
+                            IsDeleted = false,
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Entities.Entities.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnOrder(1);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int")
-                        .HasColumnOrder(16);
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedAt")
                         .IsRequired()
-                        .HasColumnType("datetime2")
-                        .HasColumnOrder(21);
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnOrder(20);
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnOrder(26);
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnOrder(25);
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("DisplayName")
                         .HasMaxLength(50)
                         .IsUnicode(true)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnOrder(4);
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(256)")
-                        .HasColumnOrder(7);
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit")
-                        .HasColumnOrder(9);
+                        .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(true)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnOrder(2);
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit")
-                        .HasColumnOrder(17);
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
-                        .HasColumnOrder(24);
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastLogin")
-                        .HasColumnType("datetime2")
-                        .HasColumnOrder(18);
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(true)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnOrder(3);
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit")
-                        .HasColumnOrder(15);
+                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset")
-                        .HasColumnOrder(14);
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnOrder(23);
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnOrder(22);
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(256)")
-                        .HasColumnOrder(8);
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnOrder(6);
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnOrder(10);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnOrder(11);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit")
-                        .HasColumnOrder(12);
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnOrder(19);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit")
-                        .HasColumnOrder(13);
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnOrder(5);
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -217,10 +202,30 @@ namespace Persistence.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.HasIndex("UserName")
-                        .IsUnique();
-
                     b.ToTable("ApplicationUser", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("753796ac-9ce4-47d5-a5e3-8a9634f794fc"),
+                            AccessFailedCount = 0,
+                            CreatedAt = new DateTime(2024, 9, 4, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "753796ac-9ce4-47d5-a5e3-8a9634f794fc",
+                            Email = "mnu.nasir@gmail.com",
+                            EmailConfirmed = false,
+                            FirstName = "Mohammad",
+                            IsActive = true,
+                            IsDeleted = false,
+                            LastName = "Nasir Uddin",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "MNU.NASIR@GMAIL.COM",
+                            NormalizedUserName = "MNU.NASIR@GMAIL.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAELUpSzMjQ5pjTFxJQ/tj5cthe1/3Q7TBTeEntMlT0D2xgFJoDyJhZAoO6r/W+09E1g==",
+                            PhoneNumberConfirmed = false,
+                            TenantId = new Guid("0bfde7b5-5d86-4ab5-9604-e19dc29d9800"),
+                            TwoFactorEnabled = false,
+                            UserName = "mnu.nasir@gmail.com"
+                        });
                 });
 
             modelBuilder.Entity("Entities.Entities.Employee", b =>
@@ -354,6 +359,18 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tenant", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0bfde7b5-5d86-4ab5-9604-e19dc29d9800"),
+                            CreatedAt = new DateTime(2024, 9, 4, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "",
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsPrimary = true,
+                            Title = "Nasir Inc"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -438,6 +455,13 @@ namespace Persistence.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("753796ac-9ce4-47d5-a5e3-8a9634f794fc"),
+                            RoleId = new Guid("e3cc0c53-8409-4a08-928a-e0996bc14e23")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>

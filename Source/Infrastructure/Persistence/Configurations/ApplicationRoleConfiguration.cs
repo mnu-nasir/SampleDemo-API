@@ -15,40 +15,21 @@ namespace Persistence.Configurations
             builder.HasKey(x => x.Id);
 
             // Property
-            builder.Property(x => x.Id).ValueGeneratedOnAdd().HasColumnOrder(1);
-            builder.Property(x => x.Name).IsRequired().HasColumnOrder(2);
-            builder.Property(x => x.NormalizedName).HasColumnOrder(3);
+            builder.Property(x => x.Id).ValueGeneratedOnAdd();
+            builder.Property(x => x.Name).IsRequired();
 
             builder.Property(x => x.CreatedBy)
                 .IsUnicode(false)
                 .HasMaxLength(50)
-                .IsRequired()
-                .HasColumnOrder(4);
-            builder.Property(x => x.CreatedAt).IsRequired().HasColumnOrder(5);
-            builder.Property(x => x.IsDeleted).HasColumnOrder(6);
-            builder.Property(x => x.DeletedAt).HasColumnOrder(7);
+                .IsRequired();
+
+            builder.Property(x => x.CreatedAt).IsRequired();
 
             // Ignore
             builder.Ignore(x => x.ConcurrencyStamp);
 
             // Query Filter
-            builder.HasQueryFilter(t => t.IsDeleted == false);
-
-            builder.HasData
-            (
-                new ApplicationRole
-                {
-                    Name = "Manager",
-                    NormalizedName = "MANAGER",
-                    CreatedAt = DateTime.UtcNow
-                },
-                new ApplicationRole
-                {
-                    Name = "Administrator",
-                    NormalizedName = "ADMINISTRATOR",
-                    CreatedAt = DateTime.UtcNow
-                }
-            );
+            builder.HasQueryFilter(t => t.IsDeleted == false);            
         }
     }
 }

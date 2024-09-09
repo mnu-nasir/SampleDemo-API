@@ -23,7 +23,7 @@ namespace Persistence.DbContexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AuthenticationContext).Assembly);
         }
 
         public override int SaveChanges()

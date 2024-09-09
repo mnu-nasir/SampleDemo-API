@@ -18,5 +18,7 @@ namespace Entities.Entities
         public DateTime? DeletedAt { get; set; }
         public Guid TenantId { get; set; }
         public Tenant? Tenant { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
     }
 }

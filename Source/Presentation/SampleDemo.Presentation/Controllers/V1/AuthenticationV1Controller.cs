@@ -49,5 +49,17 @@ namespace SampleDemo.Presentation.Controllers.V1
                 Token = await _serviceManager.AuthenticationService.CreateToken()
             });
         }
+
+        [HttpPost("loginWithRefreshToken")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> AuthenticateWithRefreshToken([FromBody] UserForAuthenticationDto user)
+        {
+            if (!await _serviceManager.AuthenticationService.ValidateUser(user))
+                return Unauthorized();
+
+            var tokenDto = await _serviceManager.AuthenticationService.CreateAllToken(populateExp: true);
+
+            return Ok(tokenDto);
+        }
     }
 }

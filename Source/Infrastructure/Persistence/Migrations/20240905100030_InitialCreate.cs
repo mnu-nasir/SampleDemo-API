@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class DatabaseCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,12 +18,12 @@ namespace Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     CreatedBy = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -79,28 +81,28 @@ namespace Persistence.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DisplayName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: false),
-                    NormalizedEmail = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     LastLogin = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedBy = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeletedBy = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -123,6 +125,7 @@ namespace Persistence.Migrations
                     Email = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
                     MobileNo = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
                     BloodGroup = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: true),
+                    Age = table.Column<long>(type: "bigint", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedBy = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
@@ -228,6 +231,30 @@ namespace Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "ApplicationRole",
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "IsDeleted", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { new Guid("6c894122-fbe3-41b4-9b19-4e3ac41a84b2"), new DateTime(2024, 9, 4, 0, 0, 0, 0, DateTimeKind.Utc), "", null, false, "Admin", "ADMIN" },
+                    { new Guid("e3cc0c53-8409-4a08-928a-e0996bc14e23"), new DateTime(2024, 9, 4, 0, 0, 0, 0, DateTimeKind.Utc), "", null, false, "Super Admin", "SUPER ADMIN" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Tenant",
+                columns: new[] { "Id", "Address", "CreatedAt", "CreatedBy", "DeletedAt", "DeletedBy", "IsActive", "IsDeleted", "IsPrimary", "ModifiedAt", "ModifiedBy", "Title" },
+                values: new object[] { new Guid("0bfde7b5-5d86-4ab5-9604-e19dc29d9800"), null, new DateTime(2024, 9, 4, 0, 0, 0, 0, DateTimeKind.Utc), "", null, null, true, false, true, null, null, "Nasir Inc" });
+
+            migrationBuilder.InsertData(
+                table: "ApplicationUser",
+                columns: new[] { "Id", "AccessFailedCount", "CreatedAt", "CreatedBy", "DeletedAt", "DeletedBy", "DisplayName", "Email", "EmailConfirmed", "FirstName", "IsActive", "IsDeleted", "LastLogin", "LastName", "LockoutEnabled", "LockoutEnd", "ModifiedAt", "ModifiedBy", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "TenantId", "TwoFactorEnabled", "UserName" },
+                values: new object[] { new Guid("753796ac-9ce4-47d5-a5e3-8a9634f794fc"), 0, new DateTime(2024, 9, 4, 0, 0, 0, 0, DateTimeKind.Utc), "753796ac-9ce4-47d5-a5e3-8a9634f794fc", null, null, null, "mnu.nasir@gmail.com", false, "Mohammad", true, false, null, "Nasir Uddin", false, null, null, null, "MNU.NASIR@GMAIL.COM", "MNU.NASIR@GMAIL.COM", "AQAAAAIAAYagAAAAEHg2iLs09M8MGgreyCgTVIY0qfDDTqAzoT1MjofKtGif2o9xfl0FABF97K05/zY2Cg==", null, false, new Guid("0bfde7b5-5d86-4ab5-9604-e19dc29d9800"), false, "mnu.nasir@gmail.com" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { new Guid("e3cc0c53-8409-4a08-928a-e0996bc14e23"), new Guid("753796ac-9ce4-47d5-a5e3-8a9634f794fc") });
+
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
                 table: "ApplicationRole",
@@ -241,21 +268,9 @@ namespace Persistence.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApplicationUser_Email",
-                table: "ApplicationUser",
-                column: "Email",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ApplicationUser_TenantId",
                 table: "ApplicationUser",
                 column: "TenantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ApplicationUser_UserName",
-                table: "ApplicationUser",
-                column: "UserName",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
