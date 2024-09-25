@@ -1,13 +1,12 @@
-﻿namespace Entities.Entities
-{
-    public class ShapedEntity
-    {
-        public ShapedEntity()
-        {
-            Entity = new Entity();
-        }
+﻿namespace Entities.Entities;
 
-        public Guid Id { get; set; }
-        public Entity Entity { get; set; }
+public class ShapedEntity
+{
+    public ShapedEntity()
+    {
+        Entity = new Entity();
     }
+
+    public Guid Id { get; set; }
+    public Entity Entity { get; set; }
 }

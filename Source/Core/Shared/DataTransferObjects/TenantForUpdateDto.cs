@@ -1,7 +1,6 @@
-﻿namespace Shared.DataTransferObjects
-{
-    public record TenantForUpdateDto : TenantForManipulationDto
-    {
+﻿namespace Shared.DataTransferObjects;
 
-    }
+public record TenantForUpdateDto : TenantForManipulationDto
+{
+
 }

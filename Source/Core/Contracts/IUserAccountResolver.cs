@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Contracts;
 
-namespace Contracts
+public interface IUserAccountResolver
 {
-    public interface IUserAccountResolver
-    {
-        Guid GetCurrentUserAccount();
-    }
+    Guid GetCurrentUserAccount();
 }

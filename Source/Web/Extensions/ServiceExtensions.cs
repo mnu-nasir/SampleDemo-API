@@ -1,227 +1,226 @@
-﻿using Contracts;
+﻿using Asp.Versioning;
+using Contracts;
 using Entities.Entities;
 using LoggerService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Persistence.DbContexts;
 using Persistence.Repositories;
 using Persistence.Resolvers;
 using Service.Contracts;
 using Services;
-using Web.CustomFormatters;
-using System.Threading.RateLimiting;
-using Asp.Versioning;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Threading.RateLimiting;
+using Web.CustomFormatters;
 
-namespace Web.Extensions
+namespace Web.Extensions;
+
+public static class ServiceExtensions
 {
-    public static class ServiceExtensions
+    /// <summary>
+    /// Configure CORS Policy
+    /// </summary>
+    /// <param name="services"></param>
+    public static void ConfigureCors(this IServiceCollection services)
     {
-        /// <summary>
-        /// Configure CORS Policy
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigureCors(this IServiceCollection services)
+        services.AddCors(options =>
         {
-            services.AddCors(options =>
+            options.AddPolicy("CorsPolicy", builder =>
             {
-                options.AddPolicy("CorsPolicy", builder =>
-                {
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader()
-                           .WithExposedHeaders("X-Pagination");
-                });
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .WithExposedHeaders("X-Pagination");
             });
-        }
+        });
+    }
 
-        /// <summary>
-        /// Configure IIS configuration
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigureIISIntegration(this IServiceCollection services)
-        {
-            services.Configure<IISOptions>(options => { });
-        }
+    /// <summary>
+    /// Configure IIS configuration
+    /// </summary>
+    /// <param name="services"></param>
+    public static void ConfigureIISIntegration(this IServiceCollection services)
+    {
+        services.Configure<IISOptions>(options => { });
+    }
 
-        /// <summary>
-        /// Configure logger manager service
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigureLoggerService(this IServiceCollection services)
-        {
-            services.AddSingleton<ILoggerManager, LoggerManager>();
-        }
+    /// <summary>
+    /// Configure logger manager service
+    /// </summary>
+    /// <param name="services"></param>
+    public static void ConfigureLoggerService(this IServiceCollection services)
+    {
+        services.AddSingleton<ILoggerManager, LoggerManager>();
+    }
 
-        /// <summary>
-        /// Configure Register Repository Manager
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigureRepositoryManager(this IServiceCollection services)
-        {
-            services.AddScoped<IRepositoryManager, RepositoryManager>();
-        }
+    /// <summary>
+    /// Configure Register Repository Manager
+    /// </summary>
+    /// <param name="services"></param>
+    public static void ConfigureRepositoryManager(this IServiceCollection services)
+    {
+        services.AddScoped<IRepositoryManager, RepositoryManager>();
+    }
 
-        /// <summary>
-        /// Configure Register Service Manager
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigureServiceManager(this IServiceCollection services)
-        {
-            services.AddScoped<IServiceManager, ServiceManager>();
-        }
+    /// <summary>
+    /// Configure Register Service Manager
+    /// </summary>
+    /// <param name="services"></param>
+    public static void ConfigureServiceManager(this IServiceCollection services)
+    {
+        services.AddScoped<IServiceManager, ServiceManager>();
+    }
 
-        /// <summary>
-        /// Registering DbContext
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)
-        {
-            string? connectionString = configuration.GetConnectionString("SqlConnection");
-            //services.AddDbContextPool<DatabaseContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
-            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
-            services.AddDbContext<AuthenticationContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
-            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
-            services.AddDbContext<TenantContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
-        }
+    /// <summary>
+    /// Registering DbContext
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)
+    {
+        string? connectionString = configuration.GetConnectionString("SqlConnection");
+        //services.AddDbContextPool<DatabaseContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
+        services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
+        services.AddDbContext<AuthenticationContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
+        services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
+        services.AddDbContext<TenantContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
+    }
 
-        /// <summary>
-        /// Configure Identity
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigureIdentity(this IServiceCollection services)
+    /// <summary>
+    /// Configure Identity
+    /// </summary>
+    /// <param name="services"></param>
+    public static void ConfigureIdentity(this IServiceCollection services)
+    {
+        var builder = services.AddIdentity<ApplicationUser, ApplicationRole>(o =>
         {
-            var builder = services.AddIdentity<ApplicationUser, ApplicationRole>(o =>
+            o.Password.RequireDigit = true;
+            o.Password.RequireLowercase = false;
+            o.Password.RequireUppercase = false;
+            o.Password.RequireNonAlphanumeric = false;
+            o.Password.RequiredLength = 6;
+            o.User.RequireUniqueEmail = true;
+        })
+        .AddEntityFrameworkStores<AuthenticationContext>()
+        .AddDefaultTokenProviders();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="services"></param>
+    public static void ConfigureTenantResolver(this IServiceCollection services)
+    {
+        services.AddTransient<ITenantResolver, TenantResolver>();
+        services.AddTransient<IUserAccountResolver, UserAccountResolver>();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    public static IMvcBuilder AddCustomCSVFormatter(this IMvcBuilder builder)
+    {
+        return builder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutputFormatter()));
+    }
+
+    public static void AddCustomMediaTypes(this IServiceCollection services)
+    {
+        services.Configure<MvcOptions>(config =>
+        {
+            var systemTextJsonOutputFormatter = config.OutputFormatters
+                    .OfType<SystemTextJsonOutputFormatter>()?
+                    .FirstOrDefault();
+
+            if (systemTextJsonOutputFormatter != null)
             {
-                o.Password.RequireDigit = true;
-                o.Password.RequireLowercase = false;
-                o.Password.RequireUppercase = false;
-                o.Password.RequireNonAlphanumeric = false;
-                o.Password.RequiredLength = 6;
-                o.User.RequireUniqueEmail = true;
-            })
-            .AddEntityFrameworkStores<AuthenticationContext>()
-            .AddDefaultTokenProviders();
-        }
+                systemTextJsonOutputFormatter.SupportedMediaTypes
+                        .Add("application/vnd.sampledemo.hateoas+json");
+            }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="services"></param>
-        public static void ConfigureTenantResolver(this IServiceCollection services)
-        {
-            services.AddTransient<ITenantResolver, TenantResolver>();
-            services.AddTransient<IUserAccountResolver, UserAccountResolver>();
-        }
+            var xmlOutputFormatter = config.OutputFormatters
+                    .OfType<XmlDataContractSerializerOutputFormatter>()?
+                    .FirstOrDefault();
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <returns></returns>
-        public static IMvcBuilder AddCustomCSVFormatter(this IMvcBuilder builder)
-        {
-            return builder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutputFormatter()));
-        }
-
-        public static void AddCustomMediaTypes(this IServiceCollection services)
-        {
-            services.Configure<MvcOptions>(config =>
+            if (xmlOutputFormatter != null)
             {
-                var systemTextJsonOutputFormatter = config.OutputFormatters
-                        .OfType<SystemTextJsonOutputFormatter>()?
-                        .FirstOrDefault();
+                xmlOutputFormatter.SupportedMediaTypes
+                        .Add("application/vnd.sampledemo.hateoas+xml");
+            }
+        });
+    }
 
-                if (systemTextJsonOutputFormatter != null)
+    public static void ConfigureRateLimitingOptions(this IServiceCollection services)
+    {
+        services.AddRateLimiter(opt =>
+        {
+            opt.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                RateLimitPartition.GetFixedWindowLimiter("GlobalLimiter",
+                partition => new FixedWindowRateLimiterOptions
                 {
-                    systemTextJsonOutputFormatter.SupportedMediaTypes
-                            .Add("application/vnd.sampledemo.hateoas+json");
+                    AutoReplenishment = true,
+                    PermitLimit = 5,
+                    QueueLimit = 2,
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    Window = TimeSpan.FromMinutes(1),
+                }));
+
+            //opt.RejectionStatusCode = 429;
+
+            opt.OnRejected = async (rejectContext, cancellationToken) =>
+            {
+                rejectContext.HttpContext.Response.StatusCode = 429;
+
+                if (rejectContext.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                {
+                    await rejectContext.HttpContext.Response.WriteAsync(
+                        $"Too many request. Please try after {retryAfter.TotalSeconds} seconds.", cancellationToken);
                 }
-
-                var xmlOutputFormatter = config.OutputFormatters
-                        .OfType<XmlDataContractSerializerOutputFormatter>()?
-                        .FirstOrDefault();
-
-                if (xmlOutputFormatter != null)
+                else
                 {
-                    xmlOutputFormatter.SupportedMediaTypes
-                            .Add("application/vnd.sampledemo.hateoas+xml");
+                    await rejectContext.HttpContext.Response.WriteAsync(
+                        $"Too many request. Please try again later.", cancellationToken);
                 }
-            });
-        }
+            };
+        });
+    }
 
-        public static void ConfigureRateLimitingOptions(this IServiceCollection services)
+    public static void ConfigureVersioning(this IServiceCollection services)
+    {
+        services.AddApiVersioning(opt =>
         {
-            services.AddRateLimiter(opt =>
-            {
-                opt.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
-                    RateLimitPartition.GetFixedWindowLimiter("GlobalLimiter",
-                    partition => new FixedWindowRateLimiterOptions
-                    {
-                        AutoReplenishment = true,
-                        PermitLimit = 5,
-                        QueueLimit = 2,
-                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                        Window = TimeSpan.FromMinutes(1),
-                    }));
+            opt.ReportApiVersions = true;
+            opt.AssumeDefaultVersionWhenUnspecified = true;
+            opt.DefaultApiVersion = new ApiVersion(1, 0);
+        }).AddMvc();
+    }
 
-                //opt.RejectionStatusCode = 429;
+    public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+    {
+        var jwtSettings = configuration.GetSection("JwtSettings");
 
-                opt.OnRejected = async (rejectContext, cancellationToken) =>
-                {
-                    rejectContext.HttpContext.Response.StatusCode = 429;
-
-                    if (rejectContext.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
-                    {
-                        await rejectContext.HttpContext.Response.WriteAsync(
-                            $"Too many request. Please try after {retryAfter.TotalSeconds} seconds.", cancellationToken);
-                    }
-                    else
-                    {
-                        await rejectContext.HttpContext.Response.WriteAsync(
-                            $"Too many request. Please try again later.", cancellationToken);
-                    }
-                };
-            });
-        }
-
-        public static void ConfigureVersioning(this IServiceCollection services)
+        services.AddAuthentication(opt =>
         {
-            services.AddApiVersioning(opt =>
-            {
-                opt.ReportApiVersions = true;
-                opt.AssumeDefaultVersionWhenUnspecified = true;
-                opt.DefaultApiVersion = new ApiVersion(1, 0);
-            }).AddMvc();
-        }
-
-        public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
         {
-            var jwtSettings = configuration.GetSection("JwtSettings");
-            
-            services.AddAuthentication(opt =>
+            options.TokenValidationParameters = new TokenValidationParameters
             {
-                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings["validIssuer"],
-                    ValidAudience = jwtSettings["validAudience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["secretKey"]))
-                };
-            });
-        }
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtSettings["validIssuer"],
+                ValidAudience = jwtSettings["validAudience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["secretKey"]))
+            };
+        });
     }
 }

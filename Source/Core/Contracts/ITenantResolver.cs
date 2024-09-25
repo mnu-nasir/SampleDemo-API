@@ -1,7 +1,6 @@
-﻿namespace Contracts
+﻿namespace Contracts;
+
+public interface ITenantResolver
 {
-    public interface ITenantResolver
-    {
-        Guid GetCurrentTenant();        
-    }
+    Guid GetCurrentTenant();
 }

@@ -1,10 +1,9 @@
-﻿namespace Entities.Exceptions
+﻿namespace Entities.Exceptions;
+
+public sealed class CollectionByIdsBadRequestException : BadRequestException
 {
-    public sealed class CollectionByIdsBadRequestException : BadRequestException
+    public CollectionByIdsBadRequestException()
+        : base("Collection count mismatch comparing to IDs")
     {
-        public CollectionByIdsBadRequestException()
-            : base("Collection count mismatch comparing to IDs")
-        {
-        }
     }
 }

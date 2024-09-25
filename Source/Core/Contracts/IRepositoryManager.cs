@@ -1,9 +1,8 @@
-﻿namespace Contracts
+﻿namespace Contracts;
+
+public interface IRepositoryManager
 {
-    public interface IRepositoryManager
-    {
-        ITenantRepository Tenant { get; }
-        IEmployeeRepository Employee { get; }
-        Task SaveChangesAsync();
-    }
+    ITenantRepository Tenant { get; }
+    IEmployeeRepository Employee { get; }
+    Task SaveChangesAsync();
 }

@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Entities.Exceptions;
 
-namespace Entities.Exceptions
+public sealed class TenantNotFoundException : NotFoundException
 {
-    public sealed class TenantNotFoundException : NotFoundException
+    public TenantNotFoundException(Guid tenantId)
+        : base($"The tenant with Id {tenantId} does not exist into the database.")
     {
-        public TenantNotFoundException(Guid tenantId)
-            : base($"The tenant with Id {tenantId} does not exist into the database.")
-        {
 
-        }
     }
 }

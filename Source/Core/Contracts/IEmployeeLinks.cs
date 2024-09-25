@@ -2,10 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Shared.DataTransferObjects;
 
-namespace Contracts
+namespace Contracts;
+
+public interface IEmployeeLinks
 {
-    public interface IEmployeeLinks
-    {
-        LinkResponse TryGenerateLinks(IEnumerable<EmployeeDto> employeesDto, string? fields, Guid tenantId, HttpContext httpContext);
-    }
+    LinkResponse TryGenerateLinks(IEnumerable<EmployeeDto> employeesDto, string? fields, Guid tenantId, HttpContext httpContext);
 }

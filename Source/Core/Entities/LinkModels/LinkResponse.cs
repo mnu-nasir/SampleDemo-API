@@ -1,16 +1,15 @@
 ﻿using Entities.Entities;
 
-namespace Entities.LinkModels
+namespace Entities.LinkModels;
+
+public class LinkResponse
 {
-    public class LinkResponse
+    public bool HasLinks { get; set; }
+    public List<Entity> ShapedEntities { get; set; }
+    public LinkCollectionWrapper<Entity> LinkedEntities { get; set; }
+    public LinkResponse()
     {
-        public bool HasLinks { get; set; }
-        public List<Entity> ShapedEntities { get; set; }
-        public LinkCollectionWrapper<Entity> LinkedEntities { get; set; }
-        public LinkResponse()
-        {
-            LinkedEntities = new LinkCollectionWrapper<Entity>();
-            ShapedEntities = new List<Entity>();
-        }
+        LinkedEntities = new LinkCollectionWrapper<Entity>();
+        ShapedEntities = new List<Entity>();
     }
 }

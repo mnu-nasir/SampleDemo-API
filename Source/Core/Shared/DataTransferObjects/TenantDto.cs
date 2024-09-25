@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Shared.DataTransferObjects;
 
-namespace Shared.DataTransferObjects
+public record TenantDto
 {
-    public record TenantDto
-    {
-        public Guid Id { get; init; }
-        public string? Title { get; init; }
-        public string? Address { get; init; }
-    }
+    public Guid Id { get; init; }
+    public string? Title { get; init; }
+    public string? Address { get; init; }
 }

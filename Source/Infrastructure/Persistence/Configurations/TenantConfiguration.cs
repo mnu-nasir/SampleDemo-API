@@ -2,42 +2,41 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Persistence.Configurations
+namespace Persistence.Configurations;
+
+internal sealed class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 {
-    internal sealed class TenantConfiguration : IEntityTypeConfiguration<Tenant>
+    public void Configure(EntityTypeBuilder<Tenant> builder)
     {
-        public void Configure(EntityTypeBuilder<Tenant> builder)
-        {
-            // Table Name
-            builder.ToTable(nameof(Tenant));
+        // Table Name
+        builder.ToTable(nameof(Tenant));
 
-            // Key
-            builder.HasKey(t => t.Id);
+        // Key
+        builder.HasKey(t => t.Id);
 
-            // Configurations
-            builder.Property(t => t.Id).ValueGeneratedOnAdd();
-            builder.Property(t => t.Title).IsUnicode(true).HasMaxLength(100);
-            builder.Property(t => t.Address).IsUnicode(true).HasMaxLength(150);
+        // Configurations
+        builder.Property(t => t.Id).ValueGeneratedOnAdd();
+        builder.Property(t => t.Title).IsUnicode(true).HasMaxLength(100);
+        builder.Property(t => t.Address).IsUnicode(true).HasMaxLength(150);
 
-            builder.Property(x => x.CreatedBy).IsUnicode(false).HasMaxLength(50).IsRequired();
-            builder.Property(x => x.CreatedAt).IsRequired();
-            builder.Property(x => x.ModifiedBy).IsUnicode(false).HasMaxLength(50);
-            builder.Property(x => x.DeletedBy).IsUnicode(false).HasMaxLength(50);
+        builder.Property(x => x.CreatedBy).IsUnicode(false).HasMaxLength(50).IsRequired();
+        builder.Property(x => x.CreatedAt).IsRequired();
+        builder.Property(x => x.ModifiedBy).IsUnicode(false).HasMaxLength(50);
+        builder.Property(x => x.DeletedBy).IsUnicode(false).HasMaxLength(50);
 
-            // Query Filter
-            builder.HasQueryFilter(t => t.IsDeleted == false);
+        // Query Filter
+        builder.HasQueryFilter(t => t.IsDeleted == false);
 
-            // Relationships
-            builder.HasMany(t => t.Employees)
-                .WithOne(t => t.Tenant)
-                .HasForeignKey(t => t.TenantId)
-                .OnDelete(DeleteBehavior.Cascade);
+        // Relationships
+        builder.HasMany(t => t.Employees)
+            .WithOne(t => t.Tenant)
+            .HasForeignKey(t => t.TenantId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(t => t.ApplicationUsers)
-                .WithOne(t => t.Tenant)
-                .HasForeignKey(t => t.TenantId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
-        }
+        builder.HasMany(t => t.ApplicationUsers)
+            .WithOne(t => t.Tenant)
+            .HasForeignKey(t => t.TenantId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
     }
 }
